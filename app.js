@@ -3,6 +3,8 @@ import morgan from "morgan";
 import cors from "cors";
 import mongoose from "mongoose";
 
+import { DB_HOST } from "./config.js";
+
 import contactsRouter from "./routes/contactsRouter.js";
 
 const app = express();
@@ -22,11 +24,8 @@ app.use((err, req, res, next) => {
   res.status(status).json({ message });
 });
 
-const DB_HOST =
-  "mongodb+srv://Oleksandr:IMNKVmS6WmU6xh2B@cluster0.pvpi7.mongodb.net/my-contacts?retryWrites=true&w=majority&appName=Cluster0";
-
 mongoose
-  .connect(DB_HOST)
+  .connect(process.env.DB_HOST)
   .then(() => {
     console.log("Database connect successfully");
 
