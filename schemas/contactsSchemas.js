@@ -19,4 +19,4 @@ export const updateContactSchema = Joi.object({
       "Неправильний формат телефону. Використовуйте (992) 914-3792",
     "string.empty": "Поле телефону не може бути порожнім",
   }),
-});
+}).or("name", "email", "phone");

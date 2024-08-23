@@ -7,6 +7,8 @@ import {
   updateContact,
 } from "../controllers/contactsControllers.js";
 
+import contactsControllers from "../controllers/contactsControllers.js";
+
 import validateBody from "../helpers/validateBody.js";
 import {
   createContactSchema,
@@ -16,22 +18,22 @@ import ctrlWrapper from "../decorators/ctrlWrapper.js";
 
 const contactsRouter = express.Router();
 
-contactsRouter.get("/", ctrlWrapper(getAllContacts));
+contactsRouter.get("/", contactsControllers.getAllContacts);
 
-contactsRouter.get("/:id", ctrlWrapper(getOneContact));
+contactsRouter.get("/:id", contactsControllers.getOneContact);
 
-contactsRouter.delete("/:id", ctrlWrapper(deleteContact));
+contactsRouter.delete("/:id", contactsControllers.deleteContact);
 
 contactsRouter.post(
   "/",
   validateBody(createContactSchema),
-  ctrlWrapper(createContact)
+  contactsControllers.createContact
 );
 
 contactsRouter.put(
   "/:id",
   validateBody(updateContactSchema),
-  ctrlWrapper(updateContact)
+  contactsControllers.updateContact
 );
 
 export default contactsRouter;

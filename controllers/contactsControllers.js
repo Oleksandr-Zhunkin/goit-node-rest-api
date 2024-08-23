@@ -1,6 +1,7 @@
 import * as contactsService from "../services/contactsServices.js";
 
 import HttpError from "../helpers/HttpError.js";
+import ctrlWrapper from "../decorators/ctrlWrapper.js";
 
 export const getAllContacts = async (_, res) => {
   const result = await contactsService.listContacts();
@@ -38,9 +39,6 @@ export const createContact = async (req, res) => {
 };
 
 export const updateContact = async (req, res) => {
-  if (Object.keys(req.body).length === 0) {
-    throw HttpError(400, "Body must have at least one field");
-  }
   const { id } = req.params;
 
   const result = await contactsService.updateContactById(id, req.body);
@@ -50,4 +48,12 @@ export const updateContact = async (req, res) => {
   }
 
   res.json(result);
+};
+
+export default {
+  getAllContacts: ctrlWrapper(getAllContacts),
+  getOneContact: ctrlWrapper(getOneContact),
+  deleteContact: ctrlWrapper(deleteContact),
+  createContact: ctrlWrapper(createContact),
+  updateContact: ctrlWrapper(updateContact),
 };
