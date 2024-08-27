@@ -5,7 +5,9 @@ import User from "../models/User.js";
 
 import { createToken } from "../helpers/jwt.js";
 
-const findUser = (filter) => User.findOne(filter);
+export const findUser = (filter) => User.findOne(filter);
+
+export const updateUser = (filter, data) => User.findOneAndUpdate(filter, data);
 
 export const signUp = async (data) => {
   const { email, password } = data;
@@ -31,7 +33,7 @@ export const signIn = async (data) => {
   const passwordCompare = await bcrypt.compare(password, user.password);
 
   if (!passwordCompare) {
-    throw HttpError(401, "Passward invalid");
+    throw HttpError(401, "Password invalid");
   }
 
   const payload = {
@@ -39,5 +41,7 @@ export const signIn = async (data) => {
   };
   const token = createToken(payload);
 
-  return { token };
+  await updateUser({ _id: user._id }, { token });
+
+  return { token, user: { email, password } };
 };
