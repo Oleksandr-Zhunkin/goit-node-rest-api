@@ -1,6 +1,13 @@
+import * as fs from "node:fs/promises";
+import * as path from "node:path";
+import { Jimp } from "jimp";
+
 import * as authServices from "../services/authServices.js";
 
 import ctrlWrapper from "../decorators/ctrlWrapper.js";
+import HttpError from "../helpers/HttpError.js";
+
+const avatarsPath = path.resolve("public", "avatars");
 
 const signUp = async (req, res) => {
   const newUser = await authServices.signUp(req.body);
@@ -48,10 +55,34 @@ const updateSubscription = async (req, res) => {
     subscription,
   });
 };
+
+const updateAvatar = async (req, res) => {
+  const { _id } = req.user;
+  const { path: oldPath, filename } = req.file;
+
+  const newPath = path.join(avatarsPath, filename);
+
+  await fs.rename(oldPath, newPath);
+
+  Jimp.read(newPath, (error, img) => {
+    if (error) throw HttpError(500, err);
+    img.resize(250, 250).write(newPath);
+  });
+
+  const avatarURL = path.join("avatars", filename);
+
+  await authServices.updateUser({ _id }, { avatarURL });
+
+  res.json({
+    avatarURL,
+  });
+};
+
 export default {
   signUp: ctrlWrapper(signUp),
   signIn: ctrlWrapper(signIn),
   getCurrent: ctrlWrapper(getCurrent),
   signOut: ctrlWrapper(signOut),
   updateSubscription: ctrlWrapper(updateSubscription),
+  updateAvatar: ctrlWrapper(updateAvatar),
 };
