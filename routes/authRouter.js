@@ -7,6 +7,7 @@ import validateBody from "../helpers/validateBody.js";
 import { userSignUpSchema, userSignInSchema } from "../schemas/userSchemas.js";
 
 import authenticate from "../middlewares/authenticate.js";
+import upload from "../middlewares/upload.js";
 
 const signUpMiddleware = validateBody(userSignUpSchema);
 const signInMiddleware = validateBody(userSignInSchema);
@@ -22,5 +23,12 @@ authRouter.get("/current", authenticate, authControllers.getCurrent);
 authRouter.post("/logout", authenticate, authControllers.signOut);
 
 authRouter.patch("/", authenticate, authControllers.updateSubscription);
+
+authRouter.patch(
+  "/avatars",
+  upload.single("avatarURL"),
+  authenticate,
+  authControllers.updateAvatar
+);
 
 export default authRouter;

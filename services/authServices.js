@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import gravatar from "gravatar";
 
 import HttpError from "../helpers/HttpError.js";
 import User from "../models/User.js";
@@ -17,8 +18,17 @@ export const signUp = async (data) => {
     throw HttpError(409, "Email in use");
   }
 
+  const url = gravatar.url(email);
+
   const hashPassword = await bcrypt.hash(password, 10);
-  return User.create({ ...data, password: hashPassword });
+
+  const newUser = User.create({
+    ...data,
+    password: hashPassword,
+    avatarURL: url,
+  });
+
+  return newUser;
 };
 
 export const signIn = async (data) => {
