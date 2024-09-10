@@ -4,17 +4,30 @@ import authControllers from "../controllers/authControllers.js";
 
 import validateBody from "../helpers/validateBody.js";
 
-import { userSignUpSchema, userSignInSchema } from "../schemas/userSchemas.js";
+import {
+  userSignUpSchema,
+  userSignInSchema,
+  userEmailSchema,
+} from "../schemas/userSchemas.js";
 
 import authenticate from "../middlewares/authenticate.js";
 import upload from "../middlewares/upload.js";
 
 const signUpMiddleware = validateBody(userSignUpSchema);
 const signInMiddleware = validateBody(userSignInSchema);
+const resendVerifyMiddleware = validateBody(userEmailSchema);
 
 const authRouter = Router();
 
 authRouter.post("/register", signUpMiddleware, authControllers.signUp);
+
+authRouter.get("/verify/:verificationToken", authControllers.verify);
+
+authRouter.post(
+  "/verify",
+  resendVerifyMiddleware,
+  authControllers.resendVerify
+);
 
 authRouter.post("/login", signInMiddleware, authControllers.signIn);
 
